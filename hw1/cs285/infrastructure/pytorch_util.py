@@ -3,7 +3,7 @@ from typing import Union
 import torch
 from torch import nn
 
-Activation = Union[str, nn.Module]
+Activation = Union[str, nn.Module] 
 
 
 _str_to_activation = {
@@ -47,7 +47,23 @@ def build_mlp(
 
     # TODO: return a MLP. This should be an instance of nn.Module
     # Note: nn.Sequential is an instance of nn.Module.
-    raise NotImplementedError
+    mlp_layers = list()
+    # the dimension is the same for each hidden layer
+    mlp_layers.append(nn.Linear(input_size, size))
+    mlp_layers.append(activation)
+    for i in range(n_layers-1):
+        mlp_layers.append(
+            nn.Linear(size, size)
+        )
+
+        mlp_layers.append(activation)
+
+    mlp_layers.append(nn.Linear(size, output_size))
+    mlp_layers.append(output_activation)
+
+    return nn.Sequential(
+        *mlp_layers
+    )
 
 
 device = None
