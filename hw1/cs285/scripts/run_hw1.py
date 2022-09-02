@@ -1,6 +1,10 @@
 import os
 import time
 
+import sys
+
+sys.path.append(r'D:\Code\RL-homework\hw1')
+
 from cs285.infrastructure.rl_trainer import RL_Trainer
 from cs285.agents.bc_agent import BCAgent
 from cs285.policies.loaded_gaussian_policy import LoadedGaussianPolicy

@@ -6,6 +6,8 @@
 
 首先是需要对环境进行安装, 此处可以参考[installation.md](installation.md), 但是需要注意的是需要安装python3.7的环境`conda create -n cs285 python=3.7`(参考[这篇文章所述的内容](https://gitee.com/kin_zhang/drl-hwprogramm/blob/solution/hw1/solution.md)). 对于windows下mujoco-py与mujoco的安装可以参考[这篇文章](https://zhuanlan.zhihu.com/p/383655571).
 
+hw1中代码的最终运行仍然使用ipynb, 主要删除了原来代码中的Colab的设置函数.
+
 ps: 这个作业真的用windows太多坑了, 查都查不到的那种... 所以之后准备换到Linux上去了, 实在不想使用Colab
 
 ### 文件内容Complete
@@ -14,12 +16,12 @@ ps: 这个作业真的用windows太多坑了, 查都查不到的那种... 所以
 
 ```
 • scripts/run hw1.py
-• infrastructure/rl trainer.py
-• agents/bc agent.py (another read-only file)
+• infrastructure/rl_trainer.py
+• agents/bc_agent.py (another read-only file)
 • policies/MLP policy.py
-• infrastructure/replay buffer.py
+• infrastructure/replay_buffer.py
 • infrastructure/utils.py
-• infrastructure/pytorch utils.py
+• infrastructure/pytorch_utils.py
 ```
 
 #### run_hw.py
@@ -33,6 +35,8 @@ ps: 这个作业真的用windows太多坑了, 查都查不到的那种... 所以
     2. 是否do_dagger(relabel the collected obs with actions from a provided expert policy?)
     3. 将paths加入到agent中(在BC_Agent中发现 Replay buffer也在其中)
     4. 训练agent
+
+ps: 在ipynb中对一些参数有过介绍
 
 ```python
     def run_training_loop(self, n_iter, collect_policy, eval_policy,
@@ -236,7 +240,7 @@ def collect_training_trajectories(
         return all_logs
 ```
 
-`sample`(在`replay_buffer`部分的进行填充)部分个人感觉很像SGD相关的算法, 熟悉DL的话应该能够根据提示很快写出来.
+`sample`(在`replay_buffer`部分的进行填充), sample batch size大小的数据出来, 按照sample_index进行索引.
 
 ```python
     def sample_random_data(self, batch_size):
@@ -457,14 +461,31 @@ def build_mlp(
         # NOTE: skip some lines...
 ```
 
+|实验名称|eval_batch_size|ep_len|Expert Mean|BC Mean|BC Std|% of the performance of the expert|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|test_eval_batch_size_Ant|10000|1000|4713|3896|1505|82.66|
+|test_eval_batch_size_Ant|5000|1000|4713|3321|1850|70.46|
+|test_bc_Humanoind|10000|1000|10344|256|19|2.47|
+|test_bc_Walker|10000|1000|5566|553|811|9.93|
+|test_bc_HalfCheetah|10000|1000|4205|3925|107|93.34|
+|test_bc_Hopper|10000|1000|3772|1126|35|29.85|
+
 ## Q 1.3
 
-TODO
+> Experiment with one set of hyperparameters that affects the performance of the behavioral cloning agent, such as the amount of training steps, the amount of expert data provided, or something that you come up with yourself. For one of the tasks used in the previous question, show a graph of how the BC agent’s performance varies with the value of this hyperparameter. In the caption for the graph, state the hyperparameter and a brief rationale for why you chose it.
+
+此处的影响因素应该有不少, 此时对其进行尝试: 除了training step之外, 应该还有一些其他的训练参数可以供调整, 例如, train_batch_size之类的参数.
+
+|Training_steps|BC Mean|Expert Mean|
+|---|---|---|
+|10000|4754.9462890625|4713.6533203125|
+|5000|4784.3818359375|4713.6533203125|
+|1000|3896.9189453125|4713.6533203125|
+|500|2855.66357421875|4713.6533203125|
 
 ## Q 2
 
-TODO
+大概长这样:
+![Q2的图像](figs/1660487986641.png)
 
-## Q 3
-
-TODO
+好像与这个比较[相似](https://github.com/mdeib/berkeley-deep-RL-pytorch-solutions/tree/master/hw1/results)
